@@ -81,7 +81,7 @@
             scroll-behavior: smooth;
         }
         .section {
-            min-height: 100vh;
+            min-height: 50vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -142,12 +142,12 @@
         }
         .spec-table th,
         .spec-table td {
-            border: 1px solid #d46a6a;
+            border: 1px solid #F76A1F;
             padding: 8px;
             text-align: center;
         }
         .spec-table th {
-            background-color: #ff9999;
+            background-color: #F76A1F;
         }
         .spec-table caption {
             font-size: 1.5em;
@@ -227,18 +227,24 @@
             }
         }
         .section {
-            padding: 0.5rem; /* Reduce from 2rem to 1rem */
+            padding-top: 1rem;  /* небольшой отступ св2ерху */
+            padding-bottom: 1rem; /* небольшой отступ снизу */
         }
         .section + .section {
-             margin-top: -1rem; /* Pulls the second section up */
+            margin-top: 0; /* убрать автоматический внешний отступ */
+        }
+        .text-auto-color {
+        color: black;
+        mix-blend-mode: difference;
         }
     </style>
 </head>
 <body class="font-sans bg-gray-100 text-gray-800">
     <!-- Навигация -->
-    <nav class="fixed top-0 w-full bg-red-600 text-white shadow-md z-10">
+    <nav class="fixed top-0 w-full bg-red-50 text-black shadow-md z-10">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">АО Рукав</h1>
+            <!--<h1 class="text-xl font-bold">АО Рукав</h1>-->
+            <img src="logo_with_no_fone_pixian_ai2.png" alt="АО Рукав" class="h-10">
             <ul class="flex space-x-6">
                 <li><a href="index.html" class="hover:underline">Главная</a></li>
                 <li><a href="altex.html" class="hover:underline">Алтекс</a></li>
@@ -251,7 +257,7 @@
     </nav>
 
     <!-- Секция Армтекс -->
-    <section id="armtex" class="section bg-gray-100">
+    <section id="armtex" class="section bg-gradient-to-r from-red-500 to-orange-500 text-white">
         <div class="container mx-auto flex flex-col md:flex-row items-center">
             <div class="md:w-1/2 p-4 order-last md:order-first">
                 <div class="carousel-container">
@@ -283,7 +289,7 @@
 
     <!-- Секция с описанием и таблицей характеристик -->
     <section id="armtex-specs" class="section bg-gray-100">
-        <div class="container mx-auto flex flex-col md:flex-row">
+        <div class="w-full flex flex-col md:flex-row p-2">
             <!-- Текстовое описание -->
             <div class="text-container">
                 <h2 class="text-3xl font-bold mb-4">АРМТЕКС</h2>
