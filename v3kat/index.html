@@ -1,11 +1,11 @@
 <script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
         if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
             try {
                 var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
@@ -19,11 +19,11 @@
 
                 // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
                 var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                    row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
                 );
                 // Fallback
                 if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
+                    headerRowIndex = 0;
                 }
 
                 // Convert filtered JSON back to CSV
@@ -36,9 +36,11 @@
             }
         }
         return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+    }
+</script>
+<!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,6 +50,7 @@
         html {
             scroll-behavior: smooth;
         }
+
         .section {
             min-height: 100vh;
             display: flex;
@@ -57,13 +60,16 @@
         }
     </style>
 </head>
+
 <body class="font-sans bg-gray-100 text-gray-800">
     <!-- Навигация -->
     <nav class="fixed top-0 w-full bg-red-50 text-black shadow-md z-10">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <!--<h1 class="text-xl font-bold">АО Рукав</h1>-->
-            <img src="logo_with_no_fone_pixian_ai2.png" alt="АО Рукав" class="h-10">
-<ul class="flex space-x-6">
+            <!--<img src="logo_with_no_fone_pixian_ai2.png" alt="АО Рукав" class="h-10">
+            <ul class="flex space-x-6">-->
+            <img src="tp/strukt/logo/n_logo.png" class="h-10">
+            <ul class="flex space-x-6">
                 <!--<li><a href="index.html" class="hover:underline">Главная</a></li>-->
                 <li><a href="armtex.html" class="hover:underline">Армтекс</a></li>
                 <li><a href="altex.html" class="hover:underline">Алтекс</a></li>
@@ -78,8 +84,10 @@
     <section id="home" class="section bg-gradient-to-r from-red-500 to-orange-500 text-white">
         <div class="container mx-auto text-center">
             <h2 class="text-4xl font-bold mb-4">АО Рукав - Надежные решения для пожарной безопасности</h2>
-            <p class="text-lg mb-6">Мы производим высококачественные пожарные рукава, соответствующие строгим стандартам ТР ЕАЭС 043/2017 и сертифицированные по ГОСТ.</p>
-            <p class="text-lg mb-6">Наша продукция обеспечивает надежность и безопасность в самых сложных условиях эксплуатации.</p>
+            <p class="text-lg mb-6">Мы производим высококачественные пожарные рукава, соответствующие строгим стандартам
+                ТР ЕАЭС 043/2017 и сертифицированные по ГОСТ.</p>
+            <p class="text-lg mb-6">Наша продукция обеспечивает надежность и безопасность в самых сложных условиях
+                эксплуатации.</p>
         </div>
     </section>
 
@@ -91,4 +99,5 @@
         </div>
     </footer>
 </body>
+
 </html>
