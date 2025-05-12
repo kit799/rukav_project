@@ -283,10 +283,112 @@
         .vc3 {
             background-color: #F79844;
         }
+
+        @media print {
+
+            /* Скрываем навигацию, модалки, карусель и футер */
+            nav,
+            footer,
+            .carousel-container,
+            .carousel-nav,
+            .modal,
+            .modal-content,
+            .modal-close,
+            button {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+            }
+
+            .section,
+            .text-container,
+            .table-container {
+                all: initial;
+                display: block;
+                width: 100%;
+                font-family: serif;
+                color: black;
+            }
+
+            .text-container p,
+            .text-container ul,
+            .text-container h2,
+            .text-container h3,
+            .text-container h4 {
+                page-break-inside: avoid;
+            }
+
+            .spec-table {
+                page-break-inside: avoid;
+                width: 100% !important;
+                font-size: 12pt;
+                border: 1px solid black;
+            }
+
+            .spec-table th,
+            .spec-table td {
+                border: 1px solid black !important;
+                padding: 4px !important;
+                color: black !important;
+            }
+
+            .spec-table th {
+                background-color: lightgray !important;
+            }
+
+            .bg-gray-100,
+            .bg-gradient-to-r {
+                background: white !important;
+            }
+
+            /* Показываем специально добавленное изображение только при печати */
+            .print-carousel-image {
+                display: block !important;
+                margin-bottom: 1em;
+                text-align: center;
+            }
+
+            .print-carousel-image img {
+                max-width: 100% !important;
+                height: auto !important;
+                display: block;
+                margin: 0 auto;
+            }
+
+            .print-carousel-image {
+                display: block !important;
+                margin-bottom: 1em;
+                text-align: center;
+            }
+
+            .print-carousel-image img {
+                display: block;
+                max-width: 100% !important;
+                height: auto !important;
+                margin: 0 auto 1em auto;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                /* добавим совместимость */
+            }
+
+            /* На всякий случай — если потребуется обёртка на каждое изображение позже */
+            .print-carousel-image>div {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
     </style>
 </head>
 
 <body class="font-sans bg-gray-100 text-gray-800">
+    <div class="print-carousel-image" style="display: none;">
+        <div><img src="tp/original_images/sibteks/760c4d3e49ccf5866bc71d0ad2bfa56d.JPG" alt="Фото изделия"></div>
+        <div><img src="tp/original_images/sibteks/sibteks.jpg" alt="Фото изделия"></div>
+        <div><img src="tp/strukt/str/st_sib.png" alt="Фото изделия"></div>
+    </div>
     <!-- Навигация -->
     <nav class="fixed top-0 w-full bg-red-50 text-black shadow-md z-10">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -299,6 +401,13 @@
                 <li><a href="getex.html" class="hover:underline">Гетекс</a></li>
                 <li><a href="getex-special.html" class="hover:underline">Гетекс маслостойкий</a></li>
                 <li><a href="sibtex.html" class="hover:underline">Сибтекс</a></li>
+                <!-- Вставить перед закрывающим </ul> -->
+                <li>
+                    <button onclick="window.print()"
+                        class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-1 px-2 rounded">
+                        🖨️ Печать
+                    </button>
+                </li>
             </ul>
         </div>
     </nav>
