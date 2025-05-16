@@ -1,0 +1,713 @@
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], {type: 'base64'});
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                    header: 1,
+                    blankrows: false,
+                    defval: ''
+                });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) => row.filter(filledCell).length >= filteredData[index + 1] ?. filter(filledCell).length);
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, {header: 1});
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+<script type="text/javascript">
+    var gk_isXlsx = false;
+    var gk_xlsxFileLookup = {};
+    var gk_fileData = {};
+    function filledCell(cell) {
+        return cell !== '' && cell != null;
+    }
+    function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], {type: 'base64'});
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                    header: 1,
+                    blankrows: false,
+                    defval: ''
+                });
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+                var headerRowIndex = filteredData.findIndex((row, index) => row.filter(filledCell).length >= filteredData[index + 1] ?. filter(filledCell).length);
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                    headerRowIndex = 0;
+                }
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex));
+                csv = XLSX.utils.sheet_to_csv(csv, {header: 1});
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+    }
+</script>
+<!DOCTYPE html>
+<html lang="ru">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Рукав Алтекс - АО Рукав</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            html {
+                scroll-behavior: smooth;
+            }
+
+            .section {
+                min-height: 50vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+            }
+
+            .carousel-container {
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+            }
+
+            .carousel {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+                scroll-behavior: smooth;
+            }
+
+            .carousel::-webkit-scrollbar {
+                display: none;
+            }
+
+            .carousel img {
+                scroll-snap-align: start;
+                flex: 0 0 auto;
+                width: 300px;
+                height: 200px;
+                object-fit: cover;
+                margin-right: 1rem;
+                border-radius: 0.5rem;
+                cursor: pointer;
+            }
+
+            .carousel-nav {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(0, 0, 0, 0.5);
+                color: white;
+                padding: 0.5rem;
+                border-radius: 0.25rem;
+                cursor: pointer;
+                user-select: none;
+                z-index: 10;
+            }
+
+            .carousel-nav.prev {
+                left: 10px;
+            }
+
+            .carousel-nav.next {
+                right: 10px;
+            }
+
+            .carousel-nav:hover {
+                background: rgba(0, 0, 0, 0.7);
+            }
+
+            .spec-table {
+                border-collapse: collapse;
+                width: 100%;
+                font-family: Arial, sans-serif;
+            }
+
+            .spec-table th,
+            .spec-table td {
+                border: 1px solid #F76A1F;
+                padding: 8px;
+                text-align: center;
+            }
+
+            .spec-table th {
+                background-color: #F76A1F;
+            }
+
+            .spec-table caption {
+                font-size: 1.5em;
+                font-weight: bold;
+                margin: 10px 0;
+            }
+
+            .spec-table td:nth-child(1),
+            .spec-table th:nth-child(1) {
+                text-align: left;
+            }
+
+            .table-container {
+                position: sticky;
+                top: 10px;
+                width: 50%;
+                max-height: calc(100vh - 20px);
+                overflow-y: auto;
+            }
+
+            .text-container {
+                width: 50%;
+                padding-right: 2rem;
+                overflow-y: auto;
+            }
+
+            /* Modal styles */
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+                overflow: auto;
+            }
+
+            .modal-content {
+                position: relative;
+                max-width: 90vw;
+                max-height: 90vh;
+                margin: auto;
+            }
+
+            .modal-content img {
+                width: auto;
+                height: auto;
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
+                border-radius: 0.5rem;
+            }
+
+            .modal-close {
+                position: absolute;
+                top: -40px;
+                right: 0;
+                color: white;
+                font-size: 2rem;
+                cursor: pointer;
+                background: rgba(0, 0, 0, 0.5);
+                padding: 0.5rem;
+                border-radius: 0.25rem;
+            }
+
+            .modal-close:hover {
+                background: rgba(0, 0, 0, 0.7);
+            }
+
+            @media(max-width: 768px) {
+
+                .text-container,
+                .table-container {
+                    width: 100%;
+                    padding-right: 0;
+                }
+
+                .table-container {
+                    position: static;
+                    max-height: none;
+                }
+
+                .modal-content {
+                    max-width: 95vw;
+                    max-height: 95vh;
+                }
+            }
+
+            .section {
+                padding-top: 1rem;
+                /* небольшой отступ св2ерху */
+                padding-bottom: 1rem;
+                /* небольшой отступ снизу */
+            }
+
+            .section+.section {
+                margin-top: 0;
+                /* убрать автоматический внешний отступ */
+            }
+
+            .text-auto-color {
+                color: black;
+                mix-blend-mode: difference;
+            }
+
+            .header-row th {
+                background-color: #F79647;
+                text-align: center;
+            }
+
+            .value-column1 {
+                background-color: #FDE7D9;
+                text-align: center;
+            }
+
+            .value-column2 {
+                background-color: #FBD4B3;
+                text-align: center;
+            }
+
+            /* Прижимаем текст влево в первом и втором столбцах */
+            table td:nth-child(1) {
+                text-align: left;
+            }
+
+            @media print {
+
+                /* Скрываем навигацию, модалки, карусель и футер */
+                nav,
+                footer,
+                .carousel-container,
+                .carousel-nav,
+                .modal,
+                .modal-content,
+                .modal-close,
+                button {
+                    display: none !important;
+                }
+
+                body {
+                    background: white !important;
+                    color: black !important;
+                }
+
+                .section,
+                .text-container,
+                .table-container {
+                    all: initial;
+                    display: block;
+                    width: 100%;
+                    font-family: serif;
+                    color: black;
+                }
+
+                .text-container p,
+                .text-container ul,
+                .text-container h2,
+                .text-container h3,
+                .text-container h4 {
+                    page-break-inside: avoid;
+                }
+
+                .spec-table {
+                    page-break-inside: avoid;
+                    width: 100% !important;
+                    font-size: 12pt;
+                    border: 1px solid black;
+                }
+
+                .spec-table th,
+                .spec-table td {
+                    border: 1px solid black !important;
+                    padding: 4px !important;
+                    color: black !important;
+                }
+
+                .spec-table th {
+                    background-color: lightgray !important;
+                }
+
+                .bg-gray-100,
+                .bg-gradient-to-r {
+                    background: white !important;
+                }
+
+                /* Показываем специально добавленное изображение только при печати */
+                .print-carousel-image {
+                    display: block !important;
+                    margin-bottom: 1em;
+                    text-align: center;
+                }
+
+                .print-carousel-image img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                    display: block;
+                    margin: 0 auto;
+                }
+
+                .print-carousel-image {
+                    display: block !important;
+                    margin-bottom: 1em;
+                    text-align: center;
+                }
+
+                .print-carousel-image img {
+                    display: block;
+                    max-width: 100% !important;
+                    height: auto !important;
+                    margin: 0 auto 1em;
+                    page-break-inside: avoid;
+                    break-inside: avoid;
+                    /* добавим совместимость */
+                }
+
+                /* На всякий случай — если потребуется обёртка на каждое изображение позже */
+                .print-carousel-image > div {
+                    page-break-inside: avoid;
+                    break-inside: avoid;
+                }
+            }
+        </style>
+    </head>
+
+    <body class="font-sans bg-gray-100 text-gray-800">
+        <div class="print-carousel-image" style="display: none;">
+            <div><img src="tp/original_images/altx/altx3.jpg" alt="Фото изделия"></div>
+            <div><img src="tp/original_images/altx/altx.jpg" alt="Фото изделия"></div>
+            <div><img src="tp/strukt/str/st_alt.png" alt="Фото изделия"></div>
+        </div>
+        <!-- Навигация -->
+        <nav class="fixed top-0 w-full bg-red-50 text-black shadow-md z-10">
+            <div
+                class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <!--<h1 class="text-xl font-bold">АО Рукав</h1>-->
+                <img src="tp/strukt/logo/n_logo.png" alt="АО Рукав" class="h-10">
+                <ul class="flex space-x-6">
+                    <li>
+                        <a href="index.html" class="hover:underline">Главная</a>
+                    </li>
+                    <li>
+                        <a href="armtex.html" class="hover:underline">Армтекс</a>
+                    </li>
+                    <li>
+                        <a href="altex.html" class="hover:underline">Алтекс</a>
+                    </li>
+                    <li>
+                        <a href="getex.html" class="hover:underline">Гетекс</a>
+                    </li>
+                    <li>
+                        <a href="getex-special.html" class="hover:underline">Гетекс маслостойкий</a>
+                    </li>
+                    <li>
+                        <a href="sibtex.html" class="hover:underline">Сибтекс</a>
+                    </li>
+                    <!-- Вставить перед закрывающим </ul> -->
+                    <li>
+                        <button onclick="window.print()" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-1 px-2 rounded">
+                            🖨️ Печать
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Секция Армтекс -->
+        <section id="armtex" class="section bg-gradient-to-r from-red-500 to-orange-500 text-white">
+            <div class="container mx-auto flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 p-4 order-last md:order-first">
+                    <div class="carousel-container">
+                        <div class="carousel">
+                            <img src="tp/original_images/altx/altx3_fav2.jpg" alt="Рукав Армтекс 2" onclick="openModal('tp/original_images/altx/altx3_fav.jpg')">
+                            <img src="tp/original_images/altx/altx.jpg" alt="Рукав Армтекс 1" onclick="openModal('tp/original_images/altx/altx.jpg')">
+                            <img
+                            src="tp/strukt/str/st_alt.png" alt="Рукав Армтекс 3" onclick="openModal('tp/strukt/str/st_alt.png')">
+                        <!--<img src="tp/resized_images2/IMG_20250425_133720_resized.jpg" alt="Рукав Армтекс 4"
+                                                    onclick="openModal('tp/original_images/alteks/IMG_20250425_133842.jpg')">
+                                                <img src="tp/resized_images2/IMG_20250425_133942_resized.jpg" alt="Рукав Армтекс 5"
+                                                    onclick="openModal('tp/original_images/alteks/IMG_20250425_133908.jpg')">
+                                                <img src="tp/resized_images2/IMG_20250425_133921_resized.jpg" alt="Рукав Армтекс 6"
+                                                    onclick="openModal('tp/original_images/alteks/IMG_20250425_133921.jpg')">-->
+                        </div>
+                        <div class="carousel-nav prev" onclick="scrollCarousel('prev')">❮</div>
+                        <div class="carousel-nav next" onclick="scrollCarousel('next')">❯</div>
+                    </div>
+                </div>
+                <div class="md:w-1/2 p-4">
+                    <h2 class="text-3xl font-bold mb-4">Рукав пожарный «Алтекс»</h2>
+                    <p class="mb-4">Рукав пожарный напорный «Алтекс» является гибким трубопроводом, предназначенным для
+                                            транспортирования огнетушащих веществ под избыточным давлением, номинальным диаметром (DN) 50,
+                                            65, 80 на рабочее давление 1,6 Мпа, общего исполнения, по классификации - для мобильных средств
+                                            пожаротушения (РПМ). Климатическое исполнение - для районов с холодным и умеренным климатом
+                                            (УХЛ1).
+                    </p>
+                    <ul class="list-disc pl-6 mb-4">
+                        <li>Номинальный диаметр (DN): 50, 65, 80</li>
+                        <li>Рабочее давление: 1,6 МПа</li>
+                        <li>Климатическое исполнение: УХЛ1 (холодный и умеренный климат)</li>
+                        <li>Конструкция: тканый каркас с внутренней полимерной камерой</li>
+                        <li>Срок службы: 5 лет, гарантия: 12 месяцев</li>
+                    </ul>
+                    <p>Комплектация: соединительные головки, муфта для устранения течи, муфты на навязку, формуляр.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Секция с описанием и таблицей характеристик -->
+        <section id="armtex-specs" class="section bg-gray-100">
+            <div
+                class="w-full flex flex-col md:flex-row p-2">
+                <!-- Текстовое описание -->
+                <div class="text-container">
+                    <h2 class="text-3xl font-bold mb-4">АЛТЕКС</h2>
+                    <h3 class="text-xl font-semibold mb-4">Рукав общего исполнения (DN50,65,80).</h3>
+
+                    <p>
+                        <strong>&nbsp;</strong>
+                    </p>
+                    <p>Рукав пожарный напорный &laquo;Алтекс&raquo; является гибким трубопроводом, предназначенным для транспортирования огнетушащих веществ под избыточным давлением, номинальным диаметром (DN) 50, 65, 80 на рабочее давление 1,6 Мпа, общего исполнения, по классификации - для мобильных средств пожаротушения (РПМ). Климатическое исполнение - для районов с холодным и умеренным климатом (УХЛ1).</p>
+                    <p>Конструкция рукава: тканый каркас, без наружного защитного покрытия, с внутренней гидроизоляционной камерой из полимеров.</p>
+                    <p>Рукав соответствует требованиям ТР ЕАЭС 043/2017 &laquo;О требованиях к средствам обеспечения пожарной безопасности и пожаротушения&raquo;. Подтверждение соответствия требованиям ТР ЕАЭС 043/2017 &laquo;О требованиях к средствам обеспечения пожарной безопасности и пожаротушения&raquo; обеспечивается путем применения ГОСТ Р 51049-2019 (его отдельных пунктов).</p>
+                    <p>Рукав сертифицирован в установленном порядке и имеет сертификат соответствия.</p>
+                    <p>Маркировка рукава: на расстоянии не более 0,5 м от обоих концов рукава и на расстоянии не менее 5 м от одного из концов рукава. В качестве дополнительной маркировки рукава, имеются две нити, отличающиеся по цвету от нитей каркаса (просновки).</p>
+                    <p>Рукав оборудуется:</p>
+                    <p>- двумя пожарными соединительными головками ГР / пожарной соединительной головкой ГР и стволом пожарным ручным РС (для рукавов DN50,65) / соответствующего давления, изготовленными из алюминия или латуни, в том числе комбинированные (ГОСТ Р 53279-2009 &laquo;Техника пожарная. Головки соединительные пожарные. Общие технические требования. Методы испытаний&raquo;, ГОСТ Р 53331-2009 &laquo;Техника пожарная. Стволы пожарные ручные. Общие технические требования. Методы испытаний&raquo;);</p>
+                    <p>- муфтой для устранения течи (отрезком рукава пожарного напорного аналогичного типа и ном. диаметра, длиной не менее 300 мм, для оперативного устранения течи при повреждении рукава).</p>
+                    <p>- муфтами на навязку (отрезком рукава, надетым в местах навязок соединительных головок /ствола пожарного ручного/, для дополнительной защиты рукава от внешних воздействий).</p>
+                    <p>Рукав поставляется в скатке (одинарная или двойная). Намотка рукава ровная, без выступающих кромок отдельных витков. Наружный конец рукава в скатке закреплен с одной или двух сторон перевязочным материалом, исключающим возможность его раскручивания.</p>
+                    <p>Рукава поставляются в упаковке, обеспечивающей их сохранность при транспортировании и хранении. Масса упаковочной единицы не более 30 кг.</p>
+                    <p>В комплект поставки входит: -рукав (с головками / с головкой и стволом РС, для рукавов DN50,65); - муфта для устранения течи; - муфты на навязку; -формуляр по ГОСТ 2.601.</p>
+                    <p>Срок службы 5 лет. Гарантийный срок эксплуатации 12 месяцев.</p>
+                </div>
+
+
+                <!-- Таблица характеристик -->
+                <div class="table-container">
+                    <table class="spec-table">
+                        <caption>Технические характеристики — АЛТЕКС</caption>
+                        <thead>
+                            <tr 2>
+                                <th rowspan="2">Параметры (технические характеристики и размеры) рукавов</th>
+
+                            </tr>
+                            <tr class="header-row">
+                                <th>
+                                    <span style="font-size: 80%;">«Алтекс»</span><br>DN 50</th>
+                                <th>
+                                    <span style="font-size: 80%;">«Алтекс»</span><br>DN 65</th>
+                                <th>
+                                    <span style="font-size: 80%;">«Алтекс»</span><br>DN 80</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="value-column1">Номинальный диаметр</td>
+                                <td class="value-column1">DN 50</td>
+                                <td class="value-column1">DN 65</td>
+                                <td class="value-column1">DN 80</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column2">Исполнение</td>
+                                <td class="value-column2">Общее</td>
+                                <td class=" value-column2">Общее</td>
+                                <td class="value-column2">Общее</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column1">Внутренний диаметр рукава (мм)</td>
+                                <td class="value-column1">51±2</td>
+                                <td class="value-column1">66±2</td>
+                                <td class="value-column1">77±2</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column2">Длина рукава в скатке, м</td>
+                                <td class="value-column2">20±1</td>
+                                <td class="value-column2">20±1</td>
+                                <td class="value-column2">20±1</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column1">Рабочее давление рукава, МПа</td>
+                                <td class="value-column1">1,6</td>
+                                <td class="value-column1">1,6</td>
+                                <td class="value-column1">1,6</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column2">Испытательное давление, МПа, не менее</td>
+                                <td class="value-column2">2</td>
+                                <td class="value-column2">2</td>
+                                <td class="value-column2">2</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column1">Разрывное давление рукава, МПа, не менее</td>
+                                <td class="value-column1">3,5</td>
+                                <td class="value-column1">3,5</td>
+                                <td class="value-column1">3,5</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column2">Масса 1 м рукава, кг, не более</td>
+                                <td class="value-column2">0,45</td>
+                                <td class="value-column2">0,55</td>
+                                <td class="value-column2">0,65</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column1">Прочность связи внутреннего слоя с тканевым каркасом рукава
+                                                                    (адгезия),
+                                                                    Н/см, не менее</td>
+                                <td class="value-column1">10</td>
+                                <td class="value-column1">10</td>
+                                <td class="value-column1">10</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column2">Толщина внутреннего гидроизоляционного покрытия рукава, мм, не
+                                                                    менее</td>
+                                <td class="value-column2">0,3</td>
+                                <td class="value-column2">0,3</td>
+                                <td class="value-column2">0,3</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column1">Относительное удлинение рукава, при рабочем давлении, %, не более
+                                </td>
+                                <td class="value-column1">5</td>
+                                <td class="value-column1">5</td>
+                                <td class="value-column1">5</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column2">Относительное увеличение диаметра рукава, при рабочем давлении, %,
+                                                                    не более
+                                </td>
+                                <td class="value-column2">5</td>
+                                <td class="value-column2">5</td>
+                                <td class="value-column2">5</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column1">Стойкость к абразивному износу, циклов, не менее</td>
+                                <td class="value-column1">50</td>
+                                <td class="value-column1">40</td>
+                                <td class="value-column1">30</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column2">Стойкость к прожигу при 300°C, сек, не менее</td>
+                                <td class="value-column2">30</td>
+                                <td class="value-column2">30</td>
+                                <td class="value-column2">30</td>
+                            </tr>
+                            <tr>
+                                <td class="value-column">Климатическое исполнение (рабочая температура) (°С)</td>
+                                <td colspan="3">УХЛ1 (-60 +40)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modal for HD images -->
+        <div class="modal" id="imageModal" onclick="closeModal(event)">
+            <div class="modal-content">
+                <span class="modal-close" onclick="closeModal(event)">&times;</span>
+                <img id="modalImage" src="" alt="HD Image">
+            </div>
+        </div>
+
+        <!-- Футер -->
+        <footer class="bg-red-600 text-white py-4">
+            <div class="container mx-auto text-center">
+                <p>© 2025 АО Рукав. Все права защищены.</p>
+                <p>Контакты: rukav@sibteks97.ru | (3854)333822</p>
+            </div>
+        </footer>
+        <script>
+            function scrollCarousel(direction) {
+                const carousel = document.querySelector('.carousel');
+                const scrollAmount = 310; // Width of image (300px) + margin (10px)
+                let currentScroll = carousel.scrollLeft;
+                if (direction === 'prev') {
+                    carousel.scrollTo({
+                        left: currentScroll - scrollAmount,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    carousel.scrollTo({
+                        left: currentScroll + scrollAmount,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+
+            function openModal(imageSrc) {
+                const modal = document.getElementById('imageModal');
+                const modalImage = document.getElementById('modalImage');
+                modalImage.src = imageSrc;
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            }
+
+            function closeModal(event) {
+                if (event.target.classList.contains('modal') || event.target.classList.contains('modal-close') || event.target.id === 'modalImage') {
+                    const modal = document.getElementById('imageModal');
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // Restore scrolling
+                }
+            }
+        </script>
+        <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+        <script>
+            (function () {
+                function c() {
+                    var b = a.contentDocument || a.contentWindow.document;
+                    if (b) {
+                        var d = b.createElement('script');
+                        d.innerHTML = "window.__CF$cv$params={r:'9364b71999edbfcf',t:'MTc0NTY1NjE5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+                        b.getElementsByTagName('head')[0].appendChild(d)
+                    }
+                }
+                if (document.body) {
+                    var a = document.createElement('iframe');
+                    a.height = 1;
+                    a.width = 1;
+                    a.style.position = 'absolute';
+                    a.style.top = 0;
+                    a.style.left = 0;
+                    a.style.border = 'none';
+                    a.style.visibility = 'hidden';
+                    document.body.appendChild(a);
+                    if ('loading' !== document.readyState) 
+                        c();
+                     else if (window.addEventListener) 
+                        document.addEventListener('DOMContentLoaded', c);
+                     else {
+                        var e = document.onreadystatechange || function () {};
+                        document.onreadystatechange = function (b) {
+                            e(b);
+                            'loading' !== document.readyState && (document.onreadystatechange = e, c())
+                        }
+                    }
+                }
+            })();
+        </script>
+    </body>
+
+</html>
